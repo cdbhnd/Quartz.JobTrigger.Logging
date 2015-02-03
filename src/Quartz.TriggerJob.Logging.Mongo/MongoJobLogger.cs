@@ -49,7 +49,7 @@ namespace Quartz.TriggerJob.Logging.Mongo
 
         public void LogJobWasExecuted(Quartz.IJobExecutionContext jobContext, Quartz.JobExecutionException exception)
         {
-            var entry = CreateEntry(jobContext, "wasExecuted");
+            var entry = CreateEntry(jobContext, "wasExecuted", exception);
 
             this.JobLogs.Insert(entry);
         }
