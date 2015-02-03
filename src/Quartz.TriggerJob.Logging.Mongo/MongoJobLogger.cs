@@ -19,19 +19,22 @@ namespace Quartz.TriggerJob.Logging.Mongo
 
         public MongoJobLogger(string connectionString, string tablePrefix)
         {
-            BsonClassMap.RegisterClassMap<JobLogEntry>(cm =>
+            if (!BsonClassMap.IsClassMapRegistered(typeof(JobLogEntry)))
             {
-                cm.AutoMap();
-                cm.MapField(x => x.Timestamp);
-                cm.MapField(x => x.Name);
-                cm.MapField(x => x.Kind);
-                cm.MapField(x => x.Group);
-                cm.MapField(x => x.NextFireTimeUtc);
-                cm.MapField(x => x.PreviousFireTimeUtc);
-                cm.MapField(x => x.JobRunTime);
-                cm.MapField(x => x.ExceptionMessage);
-                cm.MapField(x => x.ExceptionStackTrace);
-            });
+                BsonClassMap.RegisterClassMap<JobLogEntry>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.MapField(x => x.Timestamp);
+                    cm.MapField(x => x.Name);
+                    cm.MapField(x => x.Kind);
+                    cm.MapField(x => x.Group);
+                    cm.MapField(x => x.NextFireTimeUtc);
+                    cm.MapField(x => x.PreviousFireTimeUtc);
+                    cm.MapField(x => x.JobRunTime);
+                    cm.MapField(x => x.ExceptionMessage);
+                    cm.MapField(x => x.ExceptionStackTrace);
+                });
+            }
 
             this.tablePrefix = tablePrefix;
 

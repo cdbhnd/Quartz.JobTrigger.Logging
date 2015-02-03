@@ -19,14 +19,17 @@ namespace Quartz.TriggerJob.Logging.Mongo
 
         public MongoTriggerLogger(string connectionString, string tablePrefix)
         {
-            BsonClassMap.RegisterClassMap<TriggerLogEntry>(cm =>
+            if (!BsonClassMap.IsClassMapRegistered(typeof(TriggerLogEntry)))
             {
-                cm.AutoMap();
-                cm.MapField(x => x.Timestamp);
-                cm.MapField(x => x.Name);
-                cm.MapField(x => x.Kind);
-                cm.MapField(x => x.Group);
-            });
+                BsonClassMap.RegisterClassMap<TriggerLogEntry>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.MapField(x => x.Timestamp);
+                    cm.MapField(x => x.Name);
+                    cm.MapField(x => x.Kind);
+                    cm.MapField(x => x.Group);
+                });
+            }
 
             var urlBuilder = new MongoUrlBuilder(connectionString);
             var client = new MongoClient(urlBuilder.ToMongoUrl());
