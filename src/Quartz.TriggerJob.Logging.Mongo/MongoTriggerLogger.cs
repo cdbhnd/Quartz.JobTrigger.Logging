@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Quartz.TriggerJob.Logging.Loggers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,16 @@ namespace Quartz.TriggerJob.Logging.Mongo
             this.tablePrefix = tablePrefix;
             this.database = client.GetServer().GetDatabase(urlBuilder.DatabaseName);
         }
+
+        public MongoTriggerLogger(string connectionString)
+            : this(connectionString, "QUARTZ_")
+        {
+        }
+
+        public MongoTriggerLogger()
+            : this(ConfigurationManager.ConnectionStrings["quartznet-mongodb"].ConnectionString)
+        { }
+
         public void LogTriggerCompleted(Quartz.ITrigger trigger, Quartz.IJobExecutionContext context, Quartz.SchedulerInstruction triggerInstructionCode)
         {
             TriggerLogs.Insert(this.CreateEntry(trigger, "completed"));
