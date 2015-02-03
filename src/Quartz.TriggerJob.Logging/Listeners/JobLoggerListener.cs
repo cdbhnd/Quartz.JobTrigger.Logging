@@ -41,6 +41,14 @@ namespace Quartz.TriggerJob.Logging.Listeners
         public JobLoggerListener()
             : this(new ConsoleJobLogger()) { }
 
+        public IJobLogger JobLogger
+        {
+            set
+            {
+                this.jobLogger = value;
+            }
+        }
+
         public override void JobExecutionVetoed(IJobExecutionContext context)
         {
             try
