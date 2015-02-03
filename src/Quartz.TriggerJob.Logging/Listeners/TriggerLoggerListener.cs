@@ -2,6 +2,7 @@
 using Quartz.TriggerJob.Logging.Loggers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +13,21 @@ namespace Quartz.TriggerJob.Logging.Listeners
     {
         private string name;
         private ITriggerLogger triggerLogger;
+        private List<string> logEvents;
         public TriggerLoggerListener(string name, ITriggerLogger triggerLogger)
         {
             this.name = name;
             this.triggerLogger = triggerLogger;
+
+            string configValue = ConfigurationManager.AppSettings["quartz.trigger.logger.events"];
+            if (!string.IsNullOrEmpty(configValue))
+            {
+                this.logEvents = configValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+            else
+            {
+                this.logEvents = new List<string>() { "TriggerFired", "TriggerComplete" };
+            }
         }
 
         public TriggerLoggerListener(ITriggerLogger triggerLogger)
@@ -41,7 +53,10 @@ namespace Quartz.TriggerJob.Logging.Listeners
         {
             try
             {
-                this.triggerLogger.LogTriggerCompleted(trigger, context, triggerInstructionCode);
+                if (this.logEvents.Contains("TriggerComplete"))
+                {
+                    this.triggerLogger.LogTriggerCompleted(trigger, context, triggerInstructionCode);
+                }
             }
             catch
             {
@@ -53,7 +68,10 @@ namespace Quartz.TriggerJob.Logging.Listeners
         {
             try
             {
-                this.triggerLogger.LogTriggerFired(trigger, context);
+                if (this.logEvents.Contains("TriggerFired"))
+                {
+                    this.triggerLogger.LogTriggerFired(trigger, context);
+                }
             }
             catch { }
         }
@@ -62,7 +80,10 @@ namespace Quartz.TriggerJob.Logging.Listeners
         {
             try
             {
-                this.triggerLogger.LogTriggerMisfired(trigger);
+                if (this.logEvents.Contains("TriggerFired"))
+                {
+                    this.triggerLogger.LogTriggerMisfired(trigger);
+                }
             }
             catch { }
         }
